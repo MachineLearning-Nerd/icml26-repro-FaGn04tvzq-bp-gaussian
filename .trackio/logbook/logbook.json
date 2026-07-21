@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "title": "Repro - Belief Propagation Converges to Gaussian Distributions",
+  "emoji": "🎯",
+  "space_id": null,
+  "paper": null,
+  "tags": [
+    "icml2026-repro",
+    "paper-FaGn04tvzq"
+  ],
+  "updated_at": "2026-07-21T14:04:09+00:00",
+  "root": {
+    "slug": "index",
+    "title": "Repro - Belief Propagation Converges to Gaussian Distributions",
+    "file": "pages/index.md",
+    "children": [
+      {
+        "slug": "overview",
+        "title": "Overview",
+        "file": "pages/overview/page.md",
+        "children": []
+      },
+      {
+        "slug": "claims",
+        "title": "Claims",
+        "file": "pages/claims/page.md",
+        "children": []
+      },
+      {
+        "slug": "evidence",
+        "title": "Evidence",
+        "file": "pages/evidence/page.md",
+        "children": []
+      },
+      {
+        "slug": "verification-run",
+        "title": "Verification run",
+        "file": "pages/verification-run/page.md",
+        "children": []
+      },
+      {
+        "slug": "conclusion",
+        "title": "Conclusion",
+        "file": "pages/conclusion/page.md",
+        "children": []
+      }
+    ]
+  },
+  "agent_view_tokens": 1648,
+  "revision": "1784642649203787377"
+}
