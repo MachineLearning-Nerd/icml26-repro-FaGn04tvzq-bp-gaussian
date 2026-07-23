@@ -115,6 +115,12 @@ def _kernel_for_direction(
     return kernel if source < target else kernel[::-1]
 
 
+def oriented_kernel(
+    kernels: dict[tuple[int, int], np.ndarray], source: int, target: int
+) -> np.ndarray:
+    return _kernel_for_direction(kernels, source, target)
+
+
 def exact_tree_bp(
     size: int,
     edges: list[tuple[int, int]],
@@ -179,7 +185,10 @@ def loopy_grid_bp(
     unaries: dict[int, np.ndarray],
     kernels: dict[tuple[int, int], np.ndarray],
     iterations: int,
-) -> dict[int, np.ndarray]:
+    return_messages: bool = False,
+) -> dict[int, np.ndarray] | tuple[
+    dict[int, np.ndarray], dict[tuple[int, int], np.ndarray], dict[int, list[int]]
+]:
     """Synchronous sum-product BP on a four-neighbour grid."""
     edges: list[tuple[int, int]] = []
     for row in range(rows):
@@ -214,12 +223,15 @@ def loopy_grid_bp(
             )
         messages = updated
 
-    return {
+    beliefs = {
         node: multiply_pmfs(
             [unary[node], *(messages[(other, node)] for other in neighbours[node])], size
         )
         for node in range(rows * cols)
     }
+    if return_messages:
+        return beliefs, messages, dict(neighbours)
+    return beliefs
 
 
 def mean_std(values: list[float]) -> tuple[float, float]:
