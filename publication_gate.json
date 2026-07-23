@@ -1,8 +1,11 @@
 {
   "paper": "FaGn04tvzq",
+  "arxiv": "2601.21935",
   "tests_passed": true,
   "publication_gate_passed": true,
-  "claims_verified": 6,
+  "claims_aligned": 6,
   "claims_total": 6,
-  "arxiv": "2601.21935"
+  "final_branch": "orx/map-decoded-cones-comparison",
+  "final_commit": "43ee5c73417181e0faf29be9223745d06e0af19a",
+  "qualification": "Finite-grid Figure-4c sweep divergent; source-exact supplementary implementation unavailable"
 }

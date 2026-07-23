@@ -1,62 +1,61 @@
 {
-  "c1_chain": {
-    "passed": true,
-    "kls": [
-      0.6116639684560219,
-      0.1742893370620902,
-      0.0667489641835796,
-      0.03269587715098088,
-      0.021199945340276142,
-      0.017328439049077087,
-      0.01610814214967755
-    ]
+  "paper": "arXiv:2601.21935",
+  "openreview": "FaGn04tvzq",
+  "registered_run": {
+    "branch": "orx/map-decoded-cones-comparison",
+    "commit": "43ee5c73417181e0faf29be9223745d06e0af19a",
+    "backend": "hf",
+    "flavor": "cpu-upgrade",
+    "runtime_seconds": 259,
+    "scientific_elapsed_seconds": 245.9
   },
-  "c2_tree": {
-    "passed": true,
-    "kls": [
-      0.6116639684560219,
-      0.1742893370620902,
-      0.0667489641835796,
-      0.03269587715098088,
-      0.021199945340276142,
-      0.017328439049077087,
-      0.01610814214967755
-    ]
+  "claims": {
+    "claim_1_chain": {
+      "assessment": "aligned",
+      "hop_3_mean_kl": 0.001303,
+      "hop_6_mean_kl": 0.00024,
+      "seeds": 101
+    },
+    "claim_2_tree": {
+      "assessment": "aligned",
+      "variables": 127,
+      "distinct_leaf_priors": 64,
+      "hop_3_mean_kl": 0.000826
+    },
+    "claim_3_loopy": {
+      "assessment": "aligned",
+      "grid": "4x4",
+      "hop_3_mean_kl": 0.002275,
+      "computation_tree_max_abs_difference": 0.0
+    },
+    "claim_4_exclusion": {
+      "assessment": "aligned analytically; finite-grid sweep divergent in this implementation",
+      "u_star": 0.4991595572,
+      "r_star": 6.0168484964,
+      "finite_sweep_mean_kl_below_normalized_variance_0_5": 0.080769,
+      "finite_sweep_mean_kl_above_normalized_variance_0_5": 0.081358
+    },
+    "claim_5_degree": {
+      "assessment": "aligned",
+      "degree_2_mean_kl": 0.06618,
+      "degree_10_mean_kl": 0.18719,
+      "positive_paired_slopes": 31,
+      "paired_seeds": 31
+    },
+    "claim_6_stereo": {
+      "assessment": "aligned under registered <10% MSE criterion",
+      "dataset": "official Middlebury Cones",
+      "variables": 30000,
+      "seeds": 5,
+      "bp_map_mse_mean": 21.781727,
+      "bp_map_mse_std": 0.003305,
+      "gbp_mse_mean": 20.096043,
+      "relative_mse_gap": 0.07739,
+      "low_contrast_mean_kl": 0.012508,
+      "edge_mean_kl": 0.215593,
+      "bp_expectation_mse_sensitivity": 25.116087
+    }
   },
-  "c3_loopy": {
-    "passed": true,
-    "kls": [
-      0.5939570253067096,
-      0.14940657454566927,
-      0.05547181238324039,
-      0.025135500564083885,
-      0.01891882948392213
-    ]
-  },
-  "c4_exclusion": {
-    "passed": true,
-    "kl_exclusion_far": 0.08803358346081076,
-    "kl_normal_far": 0.01610814214967755
-  },
-  "c5_kl_3hops": {
-    "passed": true,
-    "kls_beyond3": [
-      0.03269587715098088,
-      0.021199945340276142,
-      0.017328439049077087,
-      0.01610814214967755
-    ],
-    "star_center_kls": [
-      0.39408355267863554,
-      0.7202766768025823,
-      0.9234230380841626
-    ],
-    "degree_effect": true
-  },
-  "c6_stereo_proxy": {
-    "passed": true,
-    "kl_smooth": 0.017328439049077087,
-    "kl_edge": 0.6116639684560219,
-    "note": "smooth/textureless region (far from prior) Gaussianizes; high-contrast edge (near prior) stays non-Gaussian (paper: stereo depth BP)."
-  }
+  "aligned_claims": 6,
+  "total_claims": 6
 }
