@@ -70,6 +70,37 @@ def kl_to_fit_gaussian(p: np.ndarray, x: np.ndarray) -> float:
     return float(np.sum(p[mask] * (np.log(p[mask]) - np.log(np.maximum(g[mask], TINY)))))
 
 
+def kl_to_best_discrete_gaussian(p: np.ndarray, x: np.ndarray) -> float:
+    """KL to the best Gaussian PMF on the finite measurement grid.
+
+    A continuous moment-matched Gaussian is not the best discrete fit after it
+    is truncated and renormalized on a finite grid.  Figure 4c spans delta-like
+    through uniform priors, so this distinction matters at both endpoints.  A
+    one-bin minimum standard deviation represents the measurement resolution.
+    """
+    p = normalize(p)
+    mask = p > 0.0
+    entropy_term = float(np.sum(p[mask] * np.log(p[mask])))
+    mean = float(np.dot(p, x))
+    spacing = float(abs(x[1] - x[0]))
+    span = float(x[-1] - x[0])
+
+    def evaluate(log_sigmas: np.ndarray) -> np.ndarray:
+        sigmas = np.exp(log_sigmas)[:, None]
+        gaussians = np.exp(-0.5 * ((x[None, :] - mean) / sigmas) ** 2)
+        gaussians /= gaussians.sum(axis=1, keepdims=True)
+        cross_entropy = -(np.log(np.maximum(gaussians[:, mask], TINY)) @ p[mask])
+        return entropy_term + cross_entropy
+
+    coarse = np.linspace(np.log(spacing), np.log(span * 100.0), 48)
+    coarse_kl = evaluate(coarse)
+    best = int(np.argmin(coarse_kl))
+    left = coarse[max(0, best - 1)]
+    right = coarse[min(coarse.size - 1, best + 1)]
+    refined = np.linspace(left, right, 32)
+    return float(np.min(evaluate(refined)))
+
+
 def pmf_variance(p: np.ndarray, x: np.ndarray) -> float:
     p = normalize(p)
     mu = float(np.dot(p, x))

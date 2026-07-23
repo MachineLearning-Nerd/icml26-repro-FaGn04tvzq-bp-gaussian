@@ -170,7 +170,9 @@ x128 = np.linspace(0.0, 63.0, 128)
 widths = list(range(1, 129))
 prior_sweep: dict[int, list[float]] = defaultdict(list)
 ratio_sweep: dict[int, list[float]] = defaultdict(list)
+normalised_sweep: dict[int, list[float]] = defaultdict(list)
 chain20_edges = [(node, node + 1) for node in range(19)]
+uniform_variance = P.pmf_variance(P.bounded_uniform_pdf(128, 128), x128)
 for seed in SEEDS_101:
     rng = np.random.default_rng(seed)
     kernels20 = random_kernels(rng, chain20_edges, 8)
@@ -189,22 +191,30 @@ for seed in SEEDS_101:
             root=0,
         )
         center = beliefs[10]
-        prior_sweep[width].append(P.kl_to_fit_gaussian(center, x128))
-        ratio_sweep[width].append(P.pmf_variance(prior, x128) / pairwise_variance)
+        prior_variance = P.pmf_variance(prior, x128)
+        prior_sweep[width].append(P.kl_to_best_discrete_gaussian(center, x128))
+        ratio_sweep[width].append(prior_variance / pairwise_variance)
+        normalised_sweep[width].append(prior_variance / uniform_variance)
 
 width_mean_kl = {width: P.mean_std(prior_sweep[width])[0] for width in widths}
 width_std_kl = {width: P.mean_std(prior_sweep[width])[1] for width in widths}
 width_mean_ratio = {width: P.mean_std(ratio_sweep[width])[0] for width in widths}
-low_r = [width_mean_kl[w] for w in widths if width_mean_ratio[w] <= 6.0 and w > 1]
-high_r = [width_mean_kl[w] for w in widths if width_mean_ratio[w] > 6.0]
-low_r_mean = float(np.mean(low_r))
-high_r_mean = float(np.mean(high_r))
+width_mean_normalised = {width: P.mean_std(normalised_sweep[width])[0] for width in widths}
+low_variance = [width_mean_kl[w] for w in widths if width_mean_normalised[w] < 0.5]
+high_variance = [width_mean_kl[w] for w in widths if width_mean_normalised[w] >= 0.5]
+low_variance_mean = float(np.mean(low_variance))
+high_variance_mean = float(np.mean(high_variance))
 crossings = [w for w in widths if width_mean_kl[w] < PAPER_KL_THRESHOLD]
 first_crossing = crossings[0] if crossings else None
-c4 = low_r_mean > high_r_mean and bool(crossings)
+c4 = (
+    low_variance_mean > high_variance_mean
+    and high_variance_mean < PAPER_KL_THRESHOLD
+    and bool(crossings)
+)
 selected_widths = [1, 2, 4, 8, 16, 32, 64, 128]
 selected = {
     str(w): {
+        "normalised_variance": width_mean_normalised[w],
         "R": width_mean_ratio[w],
         "kl_mean": width_mean_kl[w],
         "kl_std": width_std_kl[w],
@@ -214,19 +224,20 @@ selected = {
 print("  Appendix-I settings: 20 variables, 128 bins [0,63], 8-bin random factors, widths 1..128")
 print("  seeds: 42..142 inclusive (n=101); center belief after exact converged tree BP (=20 synchronous iterations)")
 print(f"  selected sweep points (width: R, mean KL, std): {json.dumps(selected, sort_keys=True)}")
-print(f"  mean KL for R<=6 (excluding degenerate width=1): {low_r_mean:.6f}")
-print(f"  mean KL for R>6: {high_r_mean:.6f}")
-print(f"  first width with mean KL<0.02: {first_crossing}; R={width_mean_ratio[first_crossing] if first_crossing else None}")
+print(f"  mean KL for normalized prior variance <0.5: {low_variance_mean:.6f}")
+print(f"  mean KL for normalized prior variance >=0.5: {high_variance_mean:.6f}")
+print(f"  first width with mean KL<0.02: {first_crossing}; normalized variance={width_mean_normalised[first_crossing] if first_crossing else None}; R={width_mean_ratio[first_crossing] if first_crossing else None}")
 print(f"  assessment: C4 exclusion boundary={'ALIGNED' if c4 else 'DIVERGENT'}")
 results["claim_4_exclusion"] = {
     "aligned": bool(c4),
-    "low_R_mean_kl": low_r_mean,
-    "high_R_mean_kl": high_r_mean,
+    "low_normalised_variance_mean_kl": low_variance_mean,
+    "high_normalised_variance_mean_kl": high_variance_mean,
     "first_width_below_0.02": first_crossing,
     "selected_points": selected,
     "full_curve": [
         {
             "width": width,
+            "normalised_variance": width_mean_normalised[width],
             "R": width_mean_ratio[width],
             "kl_mean": width_mean_kl[width],
             "kl_std": width_std_kl[width],
