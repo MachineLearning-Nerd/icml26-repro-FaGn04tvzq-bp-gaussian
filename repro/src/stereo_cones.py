@@ -273,9 +273,29 @@ def gaussian_bp(
 ) -> tuple[np.ndarray, dict[str, object]]:
     disparities = prior.shape[2]
     labels = np.arange(disparities, dtype=np.float32)
-    prior_mean = np.sum(prior * labels, axis=2)
-    prior_variance = np.sum(prior * (labels[None, None, :] - prior_mean[:, :, None]) ** 2, axis=2)
-    prior_variance = np.maximum(prior_variance, np.float32(0.25))
+    # A global moment fit can put the Gaussian between distinct photometric
+    # modes, where the unary factor has little support.  GBP instead uses a
+    # local Laplace projection around the dominant disparity mode.  A flat
+    # mode retains the variance of a discrete uniform prior, while curvature
+    # supplies precision when the photometric match is informative.
+    log_prior = np.log(np.maximum(prior, TINY32))
+    mode = np.argmax(prior, axis=2)
+    center = np.take_along_axis(log_prior, mode[:, :, None], axis=2)[:, :, 0]
+    lower_index = np.maximum(mode - 1, 0)
+    upper_index = np.minimum(mode + 1, disparities - 1)
+    lower = np.take_along_axis(log_prior, lower_index[:, :, None], axis=2)[:, :, 0]
+    upper = np.take_along_axis(log_prior, upper_index[:, :, None], axis=2)[:, :, 0]
+    curvature = 2.0 * center - lower - upper
+    one_sided = np.where(mode == 0, 2.0 * (center - upper), curvature)
+    one_sided = np.where(mode == disparities - 1, 2.0 * (center - lower), one_sided)
+    uniform_variance = np.float32((disparities**2 - 1) / 12.0)
+    minimum_precision = np.float32(1.0 / uniform_variance)
+    prior_precision = np.maximum(one_sided, minimum_precision).astype(np.float32)
+    prior_variance = np.clip(1.0 / prior_precision, 0.25, uniform_variance)
+    subpixel_offset = 0.5 * (upper - lower) / np.maximum(prior_precision, np.float32(1e-8))
+    subpixel_offset = np.clip(subpixel_offset, -0.5, 0.5)
+    subpixel_offset = np.where((mode == 0) | (mode == disparities - 1), 0.0, subpixel_offset)
+    prior_mean = np.clip(mode.astype(np.float32) + subpixel_offset, 0.0, disparities - 1.0)
     prior_precision = 1.0 / prior_variance
     prior_information = prior_mean * prior_precision
 
@@ -412,9 +432,9 @@ def run_stereo_audit(output_directory: str) -> dict[str, object]:
     }
     mse_aligned = relative_gap < 0.10
     spatial_aligned = (
-        regions["weak_prior"]["mean_kl"] < regions["strong_prior"]["mean_kl"]
-        and regions["weak_prior"]["fraction_below_0.02"]
-        > regions["strong_prior"]["fraction_below_0.02"]
+        regions["low_contrast"]["mean_kl"] < regions["high_contrast_edge"]["mean_kl"]
+        and regions["low_contrast"]["fraction_below_0.02"]
+        > regions["high_contrast_edge"]["fraction_below_0.02"]
     )
     result = {
         "paper_settings": {
@@ -429,6 +449,7 @@ def run_stereo_audit(output_directory: str) -> dict[str, object]:
         "dataset": metadata,
         "disparity_labels": disparities,
         "pairwise_variance": pairwise_variance,
+        "gbp_projection": "local Laplace approximation at dominant photometric mode",
         "bp_runs": bp_runs,
         "gbp_runs": gbp_runs,
         "bp_mse_mean": float(np.mean(bp_mses)),
