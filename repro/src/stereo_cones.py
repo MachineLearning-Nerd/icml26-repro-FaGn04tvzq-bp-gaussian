@@ -202,6 +202,14 @@ def _convolve_labels(values: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
 
 def _prediction_mse(belief: np.ndarray, labels: np.ndarray, truth: np.ndarray) -> float:
+    """Decode the discrete BP marginal by its posterior mode (MAP)."""
+    prediction = labels[np.argmax(belief, axis=2)]
+    valid = truth > 0.0
+    return float(np.mean((prediction[valid] - truth[valid]) ** 2))
+
+
+def _expectation_mse(belief: np.ndarray, labels: np.ndarray, truth: np.ndarray) -> float:
+    """Retain posterior-mean decoding as a secondary sensitivity check."""
     prediction = np.sum(belief * labels, axis=2)
     valid = truth > 0.0
     return float(np.mean((prediction[valid] - truth[valid]) ** 2))
@@ -260,6 +268,7 @@ def nonparametric_bp(
         "iterations_executed": iteration,
         "max_iterations": MAX_ITERATIONS,
         "final_mse": _prediction_mse(belief, labels, truth),
+        "final_expectation_mse": _expectation_mse(belief, labels, truth),
         "trajectory": trajectory,
     }
 
@@ -420,6 +429,7 @@ def run_stereo_audit(output_directory: str) -> dict[str, object]:
             representative_belief = belief
 
     bp_mses = np.asarray([record["final_mse"] for record in bp_runs])
+    bp_expectation_mses = np.asarray([record["final_expectation_mse"] for record in bp_runs])
     gbp_mses = np.asarray([record["final_mse"] for record in gbp_runs])
     mse_gap = float(abs(np.mean(bp_mses) - np.mean(gbp_mses)))
     relative_gap = mse_gap / max(float(np.mean(bp_mses)), 1e-12)
@@ -450,10 +460,13 @@ def run_stereo_audit(output_directory: str) -> dict[str, object]:
         "disparity_labels": disparities,
         "pairwise_variance": pairwise_variance,
         "gbp_projection": "local Laplace approximation at dominant photometric mode",
+        "disparity_decoder": "BP posterior mode (MAP); GBP Gaussian mean, equal to its mode",
         "bp_runs": bp_runs,
         "gbp_runs": gbp_runs,
         "bp_mse_mean": float(np.mean(bp_mses)),
         "bp_mse_std": float(np.std(bp_mses, ddof=1)),
+        "bp_expectation_mse_mean": float(np.mean(bp_expectation_mses)),
+        "bp_expectation_mse_std": float(np.std(bp_expectation_mses, ddof=1)),
         "gbp_mse_mean": float(np.mean(gbp_mses)),
         "gbp_mse_std": float(np.std(gbp_mses, ddof=1)),
         "absolute_mse_gap": mse_gap,
@@ -466,6 +479,7 @@ def run_stereo_audit(output_directory: str) -> dict[str, object]:
         "substitution": "official 375x450 Cones images bilinearly resized to the paper's 150x200 grid; disparities scaled horizontally",
     }
     print(f"  BP MSE mean±sd={result['bp_mse_mean']:.6f}±{result['bp_mse_std']:.6f}")
+    print(f"  BP posterior-expectation sensitivity MSE mean±sd={result['bp_expectation_mse_mean']:.6f}±{result['bp_expectation_mse_std']:.6f}")
     print(f"  GBP MSE mean±sd={result['gbp_mse_mean']:.6f}±{result['gbp_mse_std']:.6f}")
     print(f"  BP/GBP absolute MSE gap={mse_gap:.6f}; relative gap={relative_gap:.4%}")
     print(f"  KL regions={json.dumps(regions, sort_keys=True)}")
