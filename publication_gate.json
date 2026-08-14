@@ -1,11 +1,51 @@
 {
+  "schema_version": 2,
   "paper": "FaGn04tvzq",
-  "arxiv": "2601.21935",
+  "paper_title": "Belief Propagation Converges to Gaussian Distributions in Sparsely-Connected Factor Graphs",
+  "authors": [
+    "Tom Yates",
+    "Yuzhou Cheng",
+    "Ignacio Alzugaray",
+    "Danyal Akarca",
+    "Pedro A. M. Mediano",
+    "Andrew J. Davison"
+  ],
+  "arxiv": "2601.21935v1",
   "tests_passed": true,
-  "publication_gate_passed": true,
-  "claims_aligned": 6,
+  "evidence_release_gate": "PASSED",
+  "overall_status": "MIXED_RESULTS",
+  "strict_paper_claim_gate": "NOT_READY",
   "claims_total": 6,
-  "final_branch": "orx/map-decoded-cones-comparison",
-  "final_commit": "43ee5c73417181e0faf29be9223745d06e0af19a",
-  "qualification": "Finite-grid Figure-4c sweep divergent; source-exact supplementary implementation unavailable"
+  "claims_verified": 5,
+  "claims_mixed": 1,
+  "claims_blocked": 0,
+  "claims": {
+    "C1": "VERIFIED_SCOPED",
+    "C2": "VERIFIED_SCOPED",
+    "C3": "VERIFIED_SCOPED",
+    "C4": "MIXED_RESULTS",
+    "C5": "VERIFIED_SCOPED",
+    "C6": "VERIFIED_SCOPED"
+  },
+  "historical_registered_run": {
+    "branch": "orx/map-decoded-cones-comparison",
+    "commit": "43ee5c73417181e0faf29be9223745d06e0af19a",
+    "backend": "hf",
+    "flavor": "cpu-upgrade",
+    "label": "6/6 aligned"
+  },
+  "repository": {
+    "owner": "MachineLearning-Nerd",
+    "original_name": "icml26-repro-FaGn04tvzq-bp-gaussian",
+    "target_name": "icml26-belief-propagation-gaussian-convergence",
+    "default_branch": "main"
+  },
+  "branch_policy": {
+    "expected_public_branch_count": 7,
+    "legacy_refs_absent": [
+      "master",
+      "orx/*"
+    ],
+    "cleanup_status": "PENDING"
+  }
 }

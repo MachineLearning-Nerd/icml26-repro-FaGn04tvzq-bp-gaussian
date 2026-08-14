@@ -1,6 +1,9 @@
 {
   "paper_arxiv": "2601.21935",
   "paper_orid": "FaGn04tvzq",
+  "repository_name": "icml26-belief-propagation-gaussian-convergence",
+  "overall_status": "MIXED_RESULTS",
+  "evidence_release_gate": "PASSED",
   "tags": [
     "icml2026-repro",
     "paper-FaGn04tvzq"

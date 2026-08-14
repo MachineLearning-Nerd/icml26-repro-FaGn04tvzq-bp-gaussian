@@ -2,7 +2,7 @@
 
 ![Across chain, tree, and loopy graphs, mean KL to a best-fit Gaussian falls below 0.02 before distance three.](images/headline_topologies.png)
 
-*Strongest evidence.* Across 101 seeds, the chain, real branching tree, and loopy grid all crossed the paper's `KL < 0.02` Gaussian threshold before three hops. At distance three, their mean KL values were `0.001303`, `0.000826`, and `0.002275`. The final registered run assessed all six claim groups as aligned, including an official Middlebury Cones experiment with 30,000 variables.
+*Strongest evidence.* Across 101 seeds, the chain, real branching tree, and loopy grid all crossed the paper's `KL < 0.02` Gaussian threshold before three hops. At distance three, their mean KL values were `0.001303`, `0.000826`, and `0.002275`. The final registered run labeled all six claim groups as aligned, including an official Middlebury Cones experiment with 30,000 variables. This audit reports overall `MIXED_RESULTS` because the substituted finite-grid Figure-4c sweep diverged and the Cones path is clean-room.
 
 ## The central question
 
@@ -63,11 +63,11 @@ The spatial result is stronger: `83.79%` of low-contrast pixels have KL below `0
 
 ## Assessment and remaining uncertainty
 
-All six claim groups have aligned evidence in the registered final run. The strongest results are the 101-seed topology curves, the causal controls, the analytic `R≈6` boundary, and the real 30,000-variable Cones audit. The important qualification is the finite-grid Figure-4c divergence; the important substitution is clean-room GBP because the paper's supplementary implementation was unavailable.
+The registered final run labels all six claim groups aligned. The strongest results are the 101-seed topology curves, the causal controls, the analytic `R≈6` boundary, and the real 30,000-variable Cones audit. The defensible repository status is `MIXED_RESULTS`: the finite-grid Figure-4c result diverges, and clean-room GBP is used because the paper's supplementary implementation was unavailable.
 
 A source-exact reproduction would still need the authors' supplementary factor definitions, resizing convention, disparity decoder, and GBP projection. It should also test the original 375×450 scene and additional scenes from Appendix H. Under the tested setup, however, every claim is assessed with direct—not proxy—evidence.
 
-- [Final MAP-decoded Cones branch](https://github.com/MachineLearning-Nerd/icml26-repro-FaGn04tvzq-bp-gaussian/tree/orx/map-decoded-cones-comparison) — registered six-claim result.
-- [Mode-centered Laplace branch](https://github.com/MachineLearning-Nerd/icml26-repro-FaGn04tvzq-bp-gaussian/tree/orx/mode-centered-laplace-gbp) — projection ablation.
-- [Static-moment Cones branch](https://github.com/MachineLearning-Nerd/icml26-repro-FaGn04tvzq-bp-gaussian/tree/orx/real-middlebury-cones-bp-and-gbp) — negative-control lineage.
+- [Final MAP-decoded Cones branch](https://github.com/MachineLearning-Nerd/icml26-belief-propagation-gaussian-convergence/tree/release/map-decoded-cones) — registered six-claim result.
+- [Mode-centered Laplace branch](https://github.com/MachineLearning-Nerd/icml26-belief-propagation-gaussian-convergence/tree/research/mode-centered-gbp) — projection ablation.
+- [Static-moment Cones branch](https://github.com/MachineLearning-Nerd/icml26-belief-propagation-gaussian-convergence/tree/research/middlebury-cones-control) — negative-control lineage.
 - [Self-contained tutorial notebook](../../notebooks/bp_gaussian_tutorial.py) — embedded results and bounded interactive interpretation.

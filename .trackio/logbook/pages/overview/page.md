@@ -2,16 +2,23 @@
 
 ## Belief Propagation Converges to Gaussian Distributions
 
-Paper: [arXiv:2601.21935](https://arxiv.org/abs/2601.21935) · OpenReview: `FaGn04tvzq`
+Paper: [arXiv:2601.21935](https://arxiv.org/abs/2601.21935) · OpenReview:
+FaGn04tvzq
 
-This clean-room CPU reproduction directly tests all six claim groups. The final registered run reports **6/6 aligned** on Hugging Face `cpu-upgrade`.
+The registered clean-room CPU run labeled all six claim groups aligned. The
+repository audit preserves two qualifications: Claim 4 has a divergent
+finite-grid sweep, and Claim 6 uses clean-room GBP and preprocessing.
 
-| Headline paper result | Observed result |
-|---|---|
-| Chain/tree/loopy KL `<0.02` within 3 hops | Hop-3 KL `0.001303 / 0.000826 / 0.002275`, 101 seeds |
-| Appendix-D exclusion boundary `R≈6` | `R*=6.0168484964` |
-| Degree increases star-center non-Gaussianity | Mean KL `0.06618 → 0.18719`; 31/31 positive paired slopes |
-| BP and GBP similar on 150×200 Cones | BP MAP MSE `21.781727`; GBP `20.096043` (7.739% gap) |
-| Textureless beliefs Gaussian, edges non-Gaussian | Mean KL `0.012508` low contrast vs `0.215593` edges |
+| Audit item | Status |
+| --- | --- |
+| Overall | MIXED_RESULTS |
+| Evidence-release gate | PASSED |
+| Strict universal paper-claim gate | NOT_READY |
+| C1, C2, C3, C5 | VERIFIED_SCOPED |
+| C4 | MIXED_RESULTS |
+| C6 | VERIFIED_SCOPED under registered <10% MSE criterion |
 
-The official 375×450 Cones data was resized to the paper's 150×200 setting and disparities were scaled horizontally. The authors' supplementary factor implementation was unavailable, so the BP/GBP solvers are independently implemented and this substitution is reported throughout.
+Headline evidence: hop-3 chain/tree/loopy KL is 0.001303 / 0.000826 /
+0.002275; the analytic exclusion boundary is R*=6.0168484964; star-center
+KL rises from 0.06618 to 0.18719; Cones BP MAP and GBP MSE are 21.781727 and
+20.096043.
