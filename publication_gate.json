@@ -42,10 +42,12 @@
   },
   "branch_policy": {
     "expected_public_branch_count": 7,
+    "remote_branch_count": 7,
     "legacy_refs_absent": [
       "master",
       "orx/*"
     ],
-    "cleanup_status": "PENDING"
+    "cleanup_status": "VERIFIED",
+    "verified_at": "2026-08-14"
   }
 }

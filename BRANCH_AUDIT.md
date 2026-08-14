@@ -40,3 +40,15 @@ every commit reachable from the seven final branches.
 - Every final branch is pushed and readable
 
 Remote verification is recorded here after the rename and final push.
+
+## Remote verification
+
+Verified on 2026-08-14 against the GitHub remote:
+
+- HEAD points to main
+- git ls-remote --heads origin returns exactly seven branches
+- master and every orx/* ref are absent
+- All reachable commit authors and committers are
+  MachineLearning-Nerd <MachineLearning-Nerd@users.noreply.github.com>
+- GitHub metadata reports owner MachineLearning-Nerd, default branch main,
+  the target repository name, and the canonical arXiv homepage
